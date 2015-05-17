@@ -4,7 +4,8 @@ import sbt._
 object Build extends sbt.Build {
   import Settings._
 
-  lazy val root = Project(id = "hoecoga-core", base = file("."), settings = defaultSettings ++ jsonSettings ++ testSettings)
+  lazy val root = Project(
+    id = "hoecoga-core", base = file("."), settings = defaultSettings ++ jsonSettings ++ testSettings)
 }
 
 object Settings {
@@ -12,7 +13,8 @@ object Settings {
     name := "hoecoga-core",
     version := "1.0",
     scalaVersion := "2.11.6",
-    scalacOptions in (Compile, compile) ++= Seq("-Xlint:-nullary-unit", "-Xlint", "-Xfatal-warnings", "-feature", "-unchecked", "-deprecation"))
+    scalacOptions in (Compile, compile) ++=
+      Seq("-Xlint:-nullary-unit", "-Xlint", "-Xfatal-warnings", "-feature", "-unchecked", "-deprecation"))
 
   val jsonSettings = Seq(libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.8")
 

@@ -1,9 +1,21 @@
 package hoecoga.core
 
+import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
+import scala.util.control.NonFatal
+
 trait JsonUtil {
+  def format[A, B](f: A => B, g: B => A)(implicit fa: Format[A]): Format[B] = {
+    def toJson(a: A): JsResult[B] = try {
+      JsSuccess(f(a))
+    } catch {
+      case NonFatal(e) => JsError.apply(ValidationError.apply(e.getMessage))
+    }
+    Format[B](Reads[B](js => fa.reads(js).fold(JsError.apply, toJson)), Writes[B](b => fa.writes(g(b))))
+  }
+
   def format[A, B](ap: String, apply: A => B, unapply: B => Option[A])(implicit fa: Format[A]): Format[B] =
     (JsPath \ ap).format[A].inmap(apply, Function.unlift(unapply))
 
